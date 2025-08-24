@@ -1,0 +1,65 @@
+<!-- Add this to your Forward Horizon contact form page -->
+
+<form id="leadForm" class="contact-form">
+  <input type="text" name="name" placeholder="Your Name" required>
+  <input type="email" name="email" placeholder="Your Email" required>
+  <input type="tel" name="phone" placeholder="Phone Number (optional)">
+  <textarea name="message" placeholder="How can we help?" rows="4"></textarea>
+  <button type="submit">Get Started</button>
+</form>
+
+<div id="formMessage" style="display:none;"></div>
+
+<script>
+document.getElementById('leadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const button = e.target.querySelector('button');
+  const messageDiv = document.getElementById('formMessage');
+  
+  // Disable button
+  button.disabled = true;
+  button.textContent = 'Sending...';
+  
+  try {
+    const params = new URLSearchParams({
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      message: formData.get('message')
+    });
+    
+    const response = await fetch(`https://forward-horizon-api.vercel.app/api/leads/submit?${params}`, {
+      method: 'POST'
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // Show success
+      messageDiv.style.display = 'block';
+      messageDiv.style.color = 'green';
+      messageDiv.textContent = data.message;
+      
+      // Clear form
+      e.target.reset();
+      
+      // Track conversion (if using analytics)
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'generate_lead', {
+          'value': 1,
+          'currency': 'USD'
+        });
+      }
+    }
+  } catch (error) {
+    messageDiv.style.display = 'block';
+    messageDiv.style.color = 'red';
+    messageDiv.textContent = 'Sorry, something went wrong. Please try again.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Get Started';
+  }
+});
+</script>
