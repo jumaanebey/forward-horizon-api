@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: forward-horizon-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: GOOGLE_CALENDAR_ID
+        value: primary
+      - key: FRONTEND_URL
+        value: https://theforwardhorizon.com
