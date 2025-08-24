@@ -1,0 +1,6 @@
+# Ignore files for other deployment platforms
+railway.json
+render.yaml
+Procfile
+nixpacks.toml
+runtime.txt
